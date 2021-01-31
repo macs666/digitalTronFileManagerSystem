@@ -1,0 +1,45 @@
+{
+  "name": "digitaltronfilemanagersystem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.json --no-daemon",
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check **/*.js",
+    "prettier:fix": "prettier --write **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macs666/digitalTronFileManagerSystem.git"
+  },
+  "author": "muhammed azhar (muhammedazhar.salim@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/macs666/digitalTronFileManagerSystem/issues"
+  },
+  "homepage": "https://github.com/macs666/digitalTronFileManagerSystem#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "http-status": "^1.5.0",
+    "nodemon": "^2.0.7",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-security": "^1.4.0",
+    "prettier": "^2.2.1"
+  }
+}
