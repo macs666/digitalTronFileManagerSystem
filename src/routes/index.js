@@ -1,19 +1,9 @@
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const graphql = require('graphql');
-const QueryRoot = require('../models');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
-// setup hello world graphql
-const schema = new graphql.GraphQLSchema({ query: QueryRoot });
+router.use('/', (req, res) => {
+  res.send('Hello World!')
+})
 
-router.use(
-  '/',
-  graphqlHTTP({
-    schema,
-    graphiql: true,
-  })
-);
-
-module.exports = router;
+module.exports = router

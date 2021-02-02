@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.js",
-    "prettier:fix": "prettier --write **/*.js"
+    "prettier:fix": "prettier --write **/*.js",
+    "migrate": "cross-env NODE_ENV=development sequelize db:migrate"
   },
   "repository": {
     "type": "git",
@@ -24,13 +25,21 @@
   "homepage": "https://github.com/macs666/digitalTronFileManagerSystem#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "apollo-server-express": "^2.19.2",
+    "bcrypt": "^5.0.0",
     "cross-env": "^7.0.3",
+    "deepmerge": "^4.2.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-graphql": "^0.12.0",
+    "express-jwt": "^6.0.0",
     "graphql": "^15.5.0",
     "http-status": "^1.5.0",
+    "join-monster": "^3.0.1",
+    "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.7",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.5.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
