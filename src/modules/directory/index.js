@@ -9,14 +9,26 @@ const typeDefs = gql`
     subDirectories: [Directory]
   }
 
+  input LinkOrderByInput {
+    name: Sort
+    createdAt: Sort
+  }
+
+  enum Sort {
+    ASC
+    DESC
+  }
+
   extend type Query {
     directory(name: String!): Directory
+    search(filter: String, orderBy: LinkOrderByInput): [Directory]
     directories: [Directory]
   }
 
   extend type Mutation {
     addPath(path: String!, pathType: String!): Directory
-    move(target: String!, destination: String!): Directory
+    deletePath(target: String!): String
+    movePath(target: String!, destination: String!): Directory
   }
 `
 

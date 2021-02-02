@@ -18,9 +18,9 @@ const server = app.listen(config.port, () => {
   logger.info(`Listening to http://localhost:${config.port}`)
 })
 
-db.sequelize.sync({ force: true }).then(() => {
-  logger.info('Dropped and resync db')
-})
+// db.sequelize.sync({ force: true }).then(() => {
+//   logger.info('Dropped and resync db')
+// })
 
 const exitHandler = () => {
   if (server) {
