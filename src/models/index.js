@@ -7,6 +7,7 @@ const Sequelize = require('sequelize')
 
 const config = require('../config/config')
 const User = require('./user')
+const Directory = require('./directory')
 
 const db = {}
 
@@ -16,6 +17,7 @@ const sequelize = new Sequelize(config.development.database, config.development.
 })
 
 db.User = User(sequelize, Sequelize)
+db.Directory = Directory(sequelize, Sequelize.DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize
