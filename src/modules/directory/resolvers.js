@@ -100,6 +100,9 @@ const resolvers = {
           name: name,
         },
       })
+      if (!fetchedDirectoryResult) {
+        throw new Error(`Invalid path`)
+      }
       const result = await recurseThroughDirectory(fetchedDirectoryResult.name)
       fetchedDirectoryResult.subDirectories = result
       return fetchedDirectoryResult
