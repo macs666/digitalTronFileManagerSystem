@@ -7,8 +7,10 @@ const routes = require('./routes')
 const ApiError = require('./utils/APIError')
 const config = require('./config/config')
 const schema = require('./modules')
+const eventHandler = require('./utils/eventHandler')
 
 const app = express()
+app.use(express.static('public'))
 
 const auth = jwt({
   secret: config.jwt.secret,
@@ -29,6 +31,7 @@ app.use(auth)
 // api routes
 app.use('/api', routes)
 
+// setup apollo server
 const server = new ApolloServer({
   schema,
   context: ({ req }) => {
@@ -39,8 +42,30 @@ const server = new ApolloServer({
 })
 
 server.applyMiddleware({
-  path: '/',
+  path: '/graphql',
   app,
+})
+
+app.get('/notifications', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Connection', 'keep-alive')
+
+  eventHandler.catchCreateEmitter((name, path) => {
+    res.write(`data: ${name} was created in ${path}\n`)
+  })
+
+  eventHandler.catchMoveEmitter((name, path) => {
+    res.write(`data: ${name} was moved to ${path}\n`)
+  })
+  eventHandler.catchDeleteEmitter((name) => {
+    res.write(`data: ${name} was deleted\n`)
+  })
+
+  // If client closes connection, stop sending events
+  res.on('close', () => {
+    res.end()
+  })
 })
 
 // send back a 404 error for any unknown api request

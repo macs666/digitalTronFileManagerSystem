@@ -1,5 +1,7 @@
+/* eslint-disable no-await-in-loop */
 const { Directory } = require('../../models')
 const db = require('../../models')
+const eventHandler = require('../../utils/eventHandler')
 
 const splitPath = async (path, action) => {
   const dirNames = path.split('/')
@@ -19,7 +21,6 @@ const splitPath = async (path, action) => {
   const fetchedDirectoryResult = await Directory.findOne({
     where: {
       name: dirNames[0],
-      pathType: 'Folder',
     },
   })
   if (!fetchedDirectoryResult) {
@@ -55,13 +56,39 @@ const recurseThroughDirectory = async (name) => {
   // eslint-disable-next-line no-restricted-syntax
   for (const val of fetchedDirectoryResults) {
     if (val.pathType === 'Folder') {
-      // eslint-disable-next-line no-await-in-loop
       const subs = await recurseThroughDirectory(val.name)
       fetchedDirectoryResults[i].subDirectories = subs
     }
     i += 1
   }
   return fetchedDirectoryResults
+}
+
+const deleteThroughDirectories = async (name) => {
+  const fetchedDirectoryResults = await Directory.findAll({
+    where: {
+      parent: name,
+    },
+  })
+  await Directory.destroy({
+    where: {
+      // eslint-disable-next-line object-shorthand
+      name: name,
+    },
+  })
+  // eslint-disable-next-line no-restricted-syntax
+  for (const val of fetchedDirectoryResults) {
+    if (val.pathType === 'Folder') {
+      // eslint-disable-next-line no-unused-vars
+      await deleteThroughDirectories(val.name)
+    } else {
+      await Directory.destroy({
+        where: {
+          name: val.name,
+        },
+      })
+    }
+  }
 }
 
 const resolvers = {
@@ -133,23 +160,40 @@ const resolvers = {
         parent: directories[directories.length - 1].parent,
         createdById: user.id,
       })
+      eventHandler.fireCreateEmitter(
+        directories[directories.length - 1].name,
+        directories[directories.length - 1].parent ? directories[directories.length - 1].parent : 'root'
+      )
       return dir
     },
 
-    async deletePath(_, { target, destination }, { user }) {
-      return {
-        name: target,
-        pathType: destination,
-        createdById: user.id,
-      }
+    async deletePath(_, { target }) {
+      await splitPath(target, 'target')
+
+      await deleteThroughDirectories(target)
+
+      eventHandler.fireDeleteEmitter(target)
+
+      return 'deleted successfully'
     },
 
-    async movePath(_, { target, destination }, { user }) {
-      return {
-        name: target,
-        pathType: destination,
-        createdById: user.id,
-      }
+    async movePath(_, { target, destination }) {
+      await splitPath(target, 'target')
+      await splitPath(target, 'destination')
+
+      await Directory.update({ parent: destination }, { where: { name: target } })
+
+      eventHandler.fireMoveEmitter(target, destination)
+
+      const fetchedDirectoryResult = await Directory.findOne({
+        where: {
+          // eslint-disable-next-line object-shorthand
+          name: destination,
+        },
+      })
+      const result = await recurseThroughDirectory(fetchedDirectoryResult.name)
+      fetchedDirectoryResult.subDirectories = result
+      return fetchedDirectoryResult
     },
   },
 }
